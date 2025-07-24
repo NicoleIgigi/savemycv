@@ -5,6 +5,7 @@ import { useInView } from 'react-intersection-observer'
 import { BookOpen, Calendar, ArrowRight, Tag, User, Clock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getImagePath } from '../lib/utils'
 
 const Blog = () => {
   const [ref, inView] = useInView({
@@ -118,7 +119,7 @@ const Blog = () => {
       date: 'December 15, 2024',
       readTime: '8 min read',
       category: 'Healthcare AI',
-      image: '/images/Voice Vital.png',
+      image: getImagePath('images/Voice Vital.png'),
       tags: ['AI', 'Healthcare', 'Africa', 'Speech Recognition'],
       featured: true,
       link: 'https://medium.com/@nicoleigiranezaishimwe/voice-to-vital-signs-building-kinyarwanda-speech-recognition-for-african-healthcare-ed1627b0252b'
@@ -129,7 +130,7 @@ const Blog = () => {
       date: 'November 28, 2024',
       readTime: '6 min read',
       category: 'Machine Learning',
-      image: '/images/Detecting Danger.png',
+      image: getImagePath('images/Detecting Danger.png'),
       tags: ['Machine Learning', 'Pharmacovigilance', 'Healthcare', 'Rwanda'],
       featured: true,
       link: 'https://medium.com/@nicoleigiranezaishimwe/detecting-danger-before-it-spreads-ml-powered-pharmacovigilance-in-rwanda-47c4578981ce'
@@ -140,7 +141,7 @@ const Blog = () => {
       date: 'November 10, 2024',
       readTime: '5 min read',
       category: 'AI Ethics',
-      image: '/images/kinyamedASR project image.png',
+      image: getImagePath('images/kinyamedASR project image.png'),
       tags: ['AI Ethics', 'NLP', 'Inclusivity', 'Local Languages'],
       featured: false,
       link: 'https://medium.com/@nicoleigiranezaishimwe/ai-in-our-own-words-why-local-language-processing-matters-682291166bbf'
@@ -151,7 +152,7 @@ const Blog = () => {
       date: 'October 22, 2024',
       readTime: '4 min read',
       category: 'Education',
-      image: '/images/From Python Classes.png',
+      image: getImagePath('images/From Python Classes.png'),
       tags: ['Education', 'Programming', 'Community', 'Training'],
       featured: false,
       link: 'https://medium.com/@nicoleigiranezaishimwe/from-python-classes-to-ml-research-my-unexpected-path-in-tech-9c80e30527d3'
@@ -162,7 +163,7 @@ const Blog = () => {
       date: 'September 30, 2024',
       readTime: '6 min read',
       category: 'Machine Learning',
-      image: '/images/One Model.png',
+      image: getImagePath('images/One Model.png'),
       tags: ['Ensemble Methods', 'Healthcare', 'Prediction', 'ML'],
       featured: false,
       link: 'https://medium.com/@nicoleigiranezaishimwe/why-one-model-isnt-enough-ensemble-learning-in-healthcare-prediction-05cf91da217f'
@@ -173,7 +174,7 @@ const Blog = () => {
       date: 'September 18, 2024',
       readTime: '7 min read',
       category: 'Data Science',
-      image: '/images/Mapping Fear image.png',
+      image: getImagePath('images/Mapping Fear image.png'),
       tags: ['Data Science', 'Social Good', 'Security', 'Geospatial'],
       featured: false,
       link: 'https://medium.com/@nicoleigiranezaishimwe/mapping-fear-how-we-used-twitter-and-nlp-to-analyze-security-in-rwanda-7fe8b50167a3'
@@ -256,7 +257,7 @@ const Blog = () => {
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        e.currentTarget.src = '/images/nicole profile picture.jpg'
+                        e.currentTarget.src = getImagePath('images/nicole profile picture.jpg')
                       }}
                       style={{ objectPosition: 'center center' }}
                     />
@@ -322,7 +323,7 @@ const Blog = () => {
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        e.currentTarget.src = '/images/nicole profile picture.jpg'
+                        e.currentTarget.src = getImagePath('images/nicole profile picture.jpg')
                       }}
                       style={{ objectPosition: 'center center' }}
                     />

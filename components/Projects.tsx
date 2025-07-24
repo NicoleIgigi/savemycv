@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer'
 import { ExternalLink, Github, Calendar, Users, Award, Filter } from 'lucide-react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import ProjectDetail from './ProjectDetail'
+import { getImagePath } from '../lib/utils'
 
 const Projects = () => {
   const [ref, inView] = useInView({
@@ -83,7 +84,7 @@ const Projects = () => {
       title: 'KinyarMedASR: Kinyarwanda Medical Speech Recognition',
       period: 'Sep 2024 - Dec 2024',
       institution: 'Carnegie Mellon University',
-      image: '/images/kinyamedASR project image.png',
+      image: getImagePath('images/kinyamedASR project image.png'),
       description: 'Enhanced Automatic Speech Recognition (ASR) technology for Kinyarwanda medical contexts, addressing critical healthcare documentation challenges in Africa.',
       highlights: [
         'Reduced Word Error Rate from 31.36% to 24.34% through innovative transformer-based spell correction',
@@ -102,7 +103,7 @@ const Projects = () => {
       title: 'VigiMobile: AEFI Reporting System',
       period: 'Aug 2024 - Present',
       institution: 'Carnegie Mellon University',
-      image: '/images/vigimobile%20project%20image.png',
+      image: getImagePath('images/vigimobile project image.png'),
       description: 'Conducting research on Adverse Effects Following Immunization (AEFI) reporting using supervised learning algorithms and ensemble methods.',
       highlights: [
         'Implementing supervised learning algorithms for AEFI prediction in Rwanda\'s healthcare system',
@@ -121,7 +122,7 @@ const Projects = () => {
       title: 'Insecure Hotspots Analysis in Rwanda using Twitter Data',
       period: 'Jan 2024 - May 2024',
       institution: 'Carnegie Mellon University',
-      image: '/images/insecure%20hotsposta%20analysis%20project%20image.png',
+      image: getImagePath('images/insecure hotsposta analysis project image.png'),
       description: 'Leading research initiative analyzing security data from Twitter using natural language processing and geospatial analysis.',
       highlights: [
         'Designed comprehensive research methodology combining sentiment analysis with location data',
@@ -140,7 +141,7 @@ const Projects = () => {
       title: 'Titanic Dataset Analysis and Survival Predictions',
       period: 'Sep 2023 - Nov 2023',
       institution: 'Personal Project',
-      image: '/images/titanic%20dataset%20project%20image.png',
+      image: getImagePath('images/titanic dataset project image.png'),
       description: 'Comprehensive machine learning project analyzing the Titanic dataset with multiple predictive models and advanced optimization techniques.',
       highlights: [
         'Conducted comprehensive data cleaning, feature engineering, and exploratory analysis',
@@ -159,7 +160,7 @@ const Projects = () => {
       title: 'Geospatial Analysis of Disaster Patterns in Africa: Comparative Study of Sub-Saharan and Northern Regions (2000-2025)',
       period: 'Jan 2025 - Apr 2025',
       institution: 'Carnegie Mellon University',
-      image: '/images/gis%20project%20image.png',
+      image: getImagePath('images/gis project image.png'),
       description: 'Comprehensive geospatial analysis comparing disaster patterns between Sub-Saharan and Northern Africa using interactive dashboards and StoryMap visualization.',
       highlights: [
         'Analyzed 4,174 disaster records across Africa spanning 25 years (2000-2025)',
