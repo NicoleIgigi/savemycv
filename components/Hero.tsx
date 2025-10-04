@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Github, Linkedin, Mail } from 'lucide-react'
+import { getBasePath } from '@/lib/utils'
 import ResumeDownload from './ResumeDownload'
 
 const Hero = () => {
@@ -147,6 +148,23 @@ const Hero = () => {
                 View My Projects
               </a>
             </motion.div>
+
+          {/* Thesis link */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.3, duration: 0.8 }}
+            className="mt-2"
+          >
+            <a
+              href={encodeURI(`${getBasePath()}/documents/papers/Nicole_Igiraneza_Ishimwe_Final Research Project - Prediction of Adverse Effects Following BCG Vaccination.pdf`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-600 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-white"
+            >
+              View Thesis (PDF)
+            </a>
+          </motion.div>
           </motion.div>
         </div>
       </div>
