@@ -1,231 +1,306 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Edit, Trash2, Plus } from 'lucide-react';
+'use client'
 
-export default function BioManager() {
-  const [bioSections, setBioSections] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingSection, setEditingSection] = useState(null);
-  const [formData, setFormData] = useState({
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
+import { Save, Plus, Trash2, Edit3, Loader } from 'lucide-react'
+
+export default function BioPage() {
+  const [bioSections, setBioSections] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [editingSection, setEditingSection] = useState(null)
+  const [newSection, setNewSection] = useState({
     section_name: '',
+    title: '',
     content: '',
-    order_position: 1
-  });
-
-  const supabase = createClientComponentClient();
+    image_url: '',
+    data: {}
+  })
 
   useEffect(() => {
-    fetchBioSections();
-  }, []);
+    fetchBioSections()
+  }, [])
 
   const fetchBioSections = async () => {
     try {
       const { data, error } = await supabase
         .from('bio_sections')
         .select('*')
-        .order('order_position', { ascending: true });
+        .order('created_at', { ascending: false })
 
-      if (error) throw error;
-      setBioSections(data || []);
+      if (error) throw error
+      setBioSections(data || [])
     } catch (error) {
-      console.error('Error fetching bio sections:', error);
+      console.error('Error fetching bio sections:', error)
+      setBioSections([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSaveSection = async (section) => {
+    setSaving(true)
     try {
-      if (editingSection) {
+      if (section.id) {
+        // Update existing section
         const { error } = await supabase
           .from('bio_sections')
-          .update(formData)
-          .eq('id', editingSection.id);
-        if (error) throw error;
+          .update({
+            title: section.title,
+            content: section.content,
+            image_url: section.image_url,
+            data: section.data
+          })
+          .eq('id', section.id)
+
+        if (error) throw error
       } else {
+        // Create new section
         const { error } = await supabase
           .from('bio_sections')
-          .insert([formData]);
-        if (error) throw error;
+          .insert([{
+            section_name: section.section_name,
+            title: section.title,
+            content: section.content,
+            image_url: section.image_url,
+            data: section.data
+          }])
+
+        if (error) throw error
+        setNewSection({
+          section_name: '',
+          title: '',
+          content: '',
+          image_url: '',
+          data: {}
+        })
       }
 
-      setShowForm(false);
-      setEditingSection(null);
-      setFormData({
-        section_name: '',
-        content: '',
-        order_position: 1
-      });
-      fetchBioSections();
+      await fetchBioSections()
+      setEditingSection(null)
     } catch (error) {
-      console.error('Error saving bio section:', error);
-      alert('Error saving bio section: ' + error.message);
+      console.error('Error saving section:', error)
+      alert('Error saving section: ' + error.message)
+    } finally {
+      setSaving(false)
     }
-  };
+  }
 
-  const handleEdit = (section) => {
-    setEditingSection(section);
-    setFormData(section);
-    setShowForm(true);
-  };
+  const handleDeleteSection = async (id) => {
+    if (!confirm('Are you sure you want to delete this section?')) return
 
-  const handleDelete = async (id) => {
-    if (confirm('Are you sure you want to delete this bio section?')) {
-      try {
-        const { error } = await supabase
-          .from('bio_sections')
-          .delete()
-          .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('bio_sections')
+        .delete()
+        .eq('id', id)
 
-        if (error) throw error;
-        fetchBioSections();
-      } catch (error) {
-        console.error('Error deleting bio section:', error);
-        alert('Error deleting bio section: ' + error.message);
-      }
+      if (error) throw error
+      await fetchBioSections()
+    } catch (error) {
+      console.error('Error deleting section:', error)
+      alert('Error deleting section: ' + error.message)
     }
-  };
+  }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Loading bio sections...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader className="h-8 w-8 animate-spin text-primary-500" />
       </div>
-    );
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Bio / About</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          New Section
-        </button>
-      </div>
+    <div className="p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Bio & About Sections</h1>
+          <button
+            onClick={() => setEditingSection('new')}
+            className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add Section</span>
+          </button>
+        </div>
 
-      {showForm && (
-        <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-lg font-semibold mb-4">
-            {editingSection ? 'Edit Section' : 'New Section'}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* New Section Form */}
+        {editingSection === 'new' && (
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 className="text-lg font-semibold mb-4">Add New Bio Section</h3>
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Section Name
                 </label>
                 <input
                   type="text"
-                  value={formData.section_name}
-                  onChange={(e) => setFormData({...formData, section_name: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="About Me, Skills, Experience, etc."
-                  required
+                  value={newSection.section_name}
+                  onChange={(e) => setNewSection({...newSection, section_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="e.g., hero, about, skills"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Display Order
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title
                 </label>
                 <input
-                  type="number"
-                  value={formData.order_position}
-                  onChange={(e) => setFormData({...formData, order_position: parseInt(e.target.value)})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  min="1"
-                  required
+                  type="text"
+                  value={newSection.title}
+                  onChange={(e) => setNewSection({...newSection, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Content
+                </label>
+                <textarea
+                  value={newSection.content}
+                  onChange={(e) => setNewSection({...newSection, content: e.target.value})}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Image URL
+                </label>
+                <input
+                  type="url"
+                  value={newSection.image_url}
+                  onChange={(e) => setNewSection({...newSection, image_url: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => handleSaveSection(newSection)}
+                  disabled={saving}
+                  className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>{saving ? 'Saving...' : 'Save Section'}</span>
+                </button>
+                <button
+                  onClick={() => setEditingSection(null)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
+          </div>
+        )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Content
-              </label>
-              <textarea
-                value={formData.content}
-                onChange={(e) => setFormData({...formData, content: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded-md h-40"
-                placeholder="Write your bio content here..."
-                required
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
-              >
-                {editingSection ? 'Update' : 'Create'} Section
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingSection(null);
-                  setFormData({
-                    section_name: '',
-                    content: '',
-                    order_position: 1
-                  });
-                }}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium">Bio Sections ({bioSections.length})</h3>
-        </div>
-        <div className="divide-y divide-gray-200">
+        {/* Existing Sections */}
+        <div className="space-y-4">
           {bioSections.map((section) => (
-            <div key={section.id} className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
-                      #{section.order_position}
-                    </span>
-                    <h3 className="text-lg font-medium text-gray-900">{section.section_name}</h3>
-                  </div>
-                  <p className="text-gray-600 whitespace-pre-line">{section.content}</p>
+            <div key={section.id} className="bg-white p-6 rounded-lg shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold">{section.title || section.section_name}</h3>
+                  <p className="text-sm text-gray-500">Section: {section.section_name}</p>
                 </div>
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex space-x-2">
                   <button
-                    onClick={() => handleEdit(section)}
-                    className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-gray-100 rounded"
+                    onClick={() => setEditingSection(section.id)}
+                    className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit3 className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(section.id)}
-                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded"
+                    onClick={() => handleDeleteSection(section.id)}
+                    className="p-2 text-gray-600 hover:text-red-600 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
+              
+              {editingSection === section.id ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={section.title || ''}
+                      onChange={(e) => {
+                        const updated = bioSections.map(s => 
+                          s.id === section.id ? {...s, title: e.target.value} : s
+                        )
+                        setBioSections(updated)
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Content
+                    </label>
+                    <textarea
+                      value={section.content || ''}
+                      onChange={(e) => {
+                        const updated = bioSections.map(s => 
+                          s.id === section.id ? {...s, content: e.target.value} : s
+                        )
+                        setBioSections(updated)
+                      }}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => handleSaveSection(section)}
+                      disabled={saving}
+                      className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                    >
+                      <Save className="h-4 w-4" />
+                      <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                    </button>
+                    <button
+                      onClick={() => setEditingSection(null)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {section.content && (
+                    <p className="text-gray-700 mb-2">{section.content}</p>
+                  )}
+                  {section.image_url && (
+                    <img 
+                      src={section.image_url} 
+                      alt={section.title}
+                      className="w-32 h-32 object-cover rounded-lg"
+                    />
+                  )}
+                </div>
+              )}
             </div>
           ))}
-          {bioSections.length === 0 && (
-            <div className="p-6 text-center text-gray-500">
-              No bio sections found. Create your first section!
-            </div>
-          )}
         </div>
+
+        {bioSections.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">No bio sections found</p>
+            <button
+              onClick={() => setEditingSection('new')}
+              className="text-primary-600 hover:text-primary-700"
+            >
+              Add your first bio section
+            </button>
+          </div>
+        )}
       </div>
     </div>
-  );
-} 
+  )
+}

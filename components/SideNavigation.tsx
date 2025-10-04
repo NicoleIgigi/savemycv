@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import { Home, User, Briefcase, FolderOpen, Award, MessageSquare, Globe, Github, BookOpen, GraduationCap, Mail, Sun, Moon } from 'lucide-react'
+import { getImagePath } from '@/lib/utils'
 
 const SideNavigation = () => {
   const [activeSection, setActiveSection] = useState('home')
@@ -65,7 +66,7 @@ const SideNavigation = () => {
       <div className="mb-8">
         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-500">
           <img 
-            src="/images/nicole profile picture.jpg" 
+            src={getImagePath('images/nicole profile picture.jpg')} 
             alt="Nicole Igiraneza" 
             className="w-full h-full object-cover"
           />

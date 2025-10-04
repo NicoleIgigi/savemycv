@@ -180,14 +180,45 @@ const Projects = () => {
   // Use fallback projects if loading or if CMS has no data
   const displayProjects = loading || projects.length === 0 ? fallbackProjects : projects
 
-  const filters = [
-    { id: 'All', label: 'All Projects', count: displayProjects.length },
-    { id: 'Featured', label: 'Featured', count: displayProjects.filter((p: any) => p.featured).length },
-    { id: 'Research', label: 'Research', count: displayProjects.filter((p: any) => p.tags?.includes('Research')).length },
-    { id: 'ML/AI', label: 'ML/AI', count: displayProjects.filter((p: any) => p.tags?.some((tag: any) => tag.includes('AI') || tag.includes('ML') || tag.includes('Machine'))).length },
-    { id: 'Healthcare', label: 'Healthcare', count: displayProjects.filter((p: any) => p.tags?.includes('Healthcare')).length },
-    { id: 'Academic', label: 'Academic', count: displayProjects.filter((p: any) => p.tags?.includes('Academic')).length },
-  ]
+  const filterDefs = [
+    { id: 'All', label: 'All Projects' },
+    { id: 'Featured', label: 'Featured' },
+    { id: 'Research', label: 'Research' },
+    { id: 'ML/AI', label: 'ML/AI' },
+    { id: 'Healthcare', label: 'Healthcare' },
+    { id: 'Academic', label: 'Academic' },
+  ] as const
+
+  const getProjectTags = (project: any): string[] => {
+    const tagsFromProject = Array.isArray(project.tags) ? project.tags : []
+    const categoryTags = Array.isArray(project.category) ? project.category : (project.category ? [project.category] : [])
+    const typeTags = project.type ? [project.type] : []
+    return [...tagsFromProject, ...categoryTags, ...typeTags].map((t) => String(t).toLowerCase())
+  }
+
+  const doesProjectMatchFilter = (project: any, filterId: string): boolean => {
+    if (filterId === 'All') return true
+    if (filterId === 'Featured') return Boolean(project.featured)
+
+    const tags = getProjectTags(project)
+    switch (filterId) {
+      case 'Research':
+        return tags.includes('research')
+      case 'Healthcare':
+        return tags.includes('healthcare')
+      case 'Academic':
+        return tags.includes('academic')
+      case 'ML/AI':
+        return tags.some((t) => t.includes('ml') || t.includes('ai') || t.includes('machine'))
+      default:
+        return false
+    }
+  }
+
+  const filters = filterDefs.map((f) => ({
+    ...f,
+    count: displayProjects.filter((p: any) => doesProjectMatchFilter(p, f.id)).length,
+  }))
 
   const nextProject = () => {
     if (selectedProject !== null) {
@@ -201,9 +232,9 @@ const Projects = () => {
     }
   }
 
-  const filteredProjects = activeFilter === 'All' 
-    ? displayProjects 
-    : displayProjects.filter((project: any) => project.category.includes(activeFilter))
+  const filteredProjects = displayProjects.filter((project: any) => doesProjectMatchFilter(project, activeFilter))
+
+  const hasActiveFilter = activeFilter !== 'All'
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -247,8 +278,8 @@ const Projects = () => {
           </motion.div>
 
           {/* Filter Buttons */}
-          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-3 mb-12">
-            {filters.map((filter) => (
+          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-3 mb-4">
+            {filters.filter(f => f.count > 0 || f.id === 'All').map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
@@ -260,12 +291,30 @@ const Projects = () => {
               >
                 <Filter className="w-4 h-4" />
                 <span className="font-medium">{filter.label}</span>
-                <span className="text-xs bg-gray-300 dark:bg-gray-600 px-2 py-1 rounded-full">
-                  {filter.count}
-                </span>
+                {filter.id !== 'All' && (
+                  <span className="text-xs bg-gray-300 dark:bg-gray-600 px-2 py-1 rounded-full">
+                    {filter.count}
+                  </span>
+                )}
               </button>
             ))}
           </motion.div>
+
+          {/* Active filter chip and clear-all */}
+          {hasActiveFilter && (
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm">
+                <span>Active filter:</span>
+                <span className="font-medium">{activeFilter}</span>
+                <button
+                  onClick={() => setActiveFilter('All')}
+                  className="ml-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Projects Grid - 3 cards per row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

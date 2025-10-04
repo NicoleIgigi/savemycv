@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Github, Linkedin, Mail, Phone, MapPin, ExternalLink, ArrowUp } from 'lucide-react'
+import { getImagePath } from '@/lib/utils'
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -69,7 +70,7 @@ const Footer = () => {
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-600 mr-4">
                   <img 
-                    src="/images/nicole profile picture.jpg" 
+                    src={getImagePath('images/nicole profile picture.jpg')} 
                     alt="Nicole Igiraneza" 
                     className="w-full h-full object-cover"
                   />

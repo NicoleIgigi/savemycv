@@ -5,6 +5,7 @@ import { useInView } from 'react-intersection-observer'
 import { GraduationCap, Award, Target, Users } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getImagePath } from '@/lib/utils'
 
 const About = () => {
   const [ref, inView] = useInView({
@@ -121,7 +122,7 @@ const About = () => {
               <div className="flex justify-center md:justify-start mb-6">
                 <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-gray-500 shadow-lg">
                   <img 
-                    src="/images/nicole profile picture.jpg" 
+                    src={getImagePath('images/nicole profile picture.jpg')} 
                     alt="Nicole Igiraneza Ishimwe"
                     className="w-full h-full object-cover"
                   />

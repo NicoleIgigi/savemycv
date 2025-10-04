@@ -11,11 +11,13 @@ import Education from '@/components/Education'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 import SideNavigation from '@/components/SideNavigation'
+import StickyCTA from '@/components/StickyCTA'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900">
       <SideNavigation />
+      <StickyCTA />
       <div className="pl-20">
         <Hero />
         <About />
