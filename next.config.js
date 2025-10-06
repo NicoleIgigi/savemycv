@@ -1,12 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
+  reactStrictMode: true,
+  // Vercel handles images by default; leave unoptimized off
   images: {
-    unoptimized: true
+    unoptimized: false,
   },
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/My-Portfolio' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/My-Portfolio' : ''
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig
