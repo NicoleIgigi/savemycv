@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Edit, Trash2, Plus, Quote, Star } from 'lucide-react';
-import ImageUpload from '../../../../components/ImageUpload';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function TestimonialsManager() {
   const [testimonials, setTestimonials] = useState([]);

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Edit, Trash2, Plus, Award, ExternalLink, Calendar } from 'lucide-react';
-import ImageUpload from '../../../../components/ImageUpload';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function CertificatesManager() {
   const [certificates, setCertificates] = useState([]);

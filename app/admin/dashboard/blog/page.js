@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Edit, Trash2, Plus, Eye, Calendar, ExternalLink } from 'lucide-react';
-import ImageUpload from '../../../../components/ImageUpload';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function BlogManager() {
   const [posts, setPosts] = useState([]);
